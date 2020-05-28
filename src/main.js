@@ -1,6 +1,6 @@
 /**
  * 
- *  Gets a permission document for go to shopping food in Chile
+ *  Obtanin a document of permission to go buy food in Chile
  * 	@module main
  * 
  * 	Written by @diegoulloao
@@ -9,7 +9,10 @@
  */
 
 
-const puppeteer = require( 'puppeteer' )
+const puppeteer = require( 'puppeteer-extra' )
+const userAgent = require( 'user-agents' )
+const StealthPlugin = require( 'puppeteer-extra-plugin-stealth' )
+
 const chalk = require( 'chalk' )
 
 
@@ -56,28 +59,30 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 // Fills the fields
 ; ( async () => {
 	// Browser
+	puppeteer.use( StealthPlugin() )
 	const browser = await puppeteer.launch({ headless: false, defaultViewport: null })
 	const page = ( await browser.pages() )[0]
 
 
 	// Page
 	console.log( chalk.bgGreen.black( messages.pageLoaded ) )
+	await page.setUserAgent( userAgent.toString() )
 	await page.goto( pageIndex, { waitUntil: 'networkidle2' } )
 	console.log( chalk.bgGreen.black( `${messages.fillingData}\n` ) )
 
 
 	// Types fullname
-	await page.waitForSelector(field.name)
+	await page.waitForSelector( field.name )
 	await page.type( field.name, data.nombre )
 
 
 	// Types RUN
-	await page.waitForSelector(field.run)
+	await page.waitForSelector( field.run )
 	await page.type( field.run, data.rut )
 
 
 	// Types age
-	await page.waitForSelector(field.age)
+	await page.waitForSelector( field.age )
 	await page.type( field.age, data.edad )
 
 
@@ -159,7 +164,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Waits until user close the window
-	await browser.on( 'targetdestroyed', async ( targetdestroyed ) => {
+	await browser.on( 'targetdestroyed', async targetdestroyed => {
 		await browser.close()
 
 		if ( targetdestroyed.url() === pageIndex )
