@@ -57,7 +57,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 ; ( async () => {
 	// Browser
 	const browser = await puppeteer.launch({ headless: false, defaultViewport: null })
-	let page = ( await browser.pages() )[0]
+	const page = ( await browser.pages() )[0]
 
 
 	// Page
@@ -113,7 +113,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Types address
-	await page.waitForSelector(field.address)
+	await page.waitForSelector( field.address )
 	await page.type( field.address, data.direccion )
 
 
