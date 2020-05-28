@@ -8,6 +8,12 @@
 */
 
 
+const Table = require( 'cli-table' )
+const chalk = require( 'chalk' )
+
+const data = require( './../data.json' )
+
+
 /**
 * 
 * 	Returns the option selector in the html select by keyword.
@@ -37,4 +43,27 @@ async function getOption( selector, optionText, fieldName ) {
 
 }
 
-module.exports = { getOption }
+
+/**
+ * 
+ *  Shows All Data in screen
+ * 
+ */
+function printData() {
+
+    const dataTable = new Table({
+        // colWidths: [ 100, 200 ]
+    })
+
+    Object.keys(data).map( field => {
+        if ( field !== "copia_email" )
+            dataTable.push([ chalk.bold.green( field.charAt(0).toUpperCase() + field.slice(1) ), data[field] ])
+        ;
+    })
+
+    console.log( `${dataTable.toString()}\n` )
+
+}
+
+
+module.exports = { getOption, printData }

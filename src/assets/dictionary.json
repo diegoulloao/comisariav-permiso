@@ -1,10 +1,12 @@
 {
+    "confirm": "Se pedirá un salvoconducto con los siguientes datos:",
+    "yesno": "¿Confirmar?",
     "pageLoaded": "Cargando la página ...",
     "loaded": "Cargado.",
     "fillingData": "Completando los datos ...",
     "fallRegion": "* Deberá seleccionar manualmente el campo \"Seleccione Región\".",
     "fallCounty": "* Deberá seleccionar manualmente el campo \"Seleccione Comuna\".",
-    "dataFilled": "Datos completados.",
+    "dataFilled": "Datos listos.",
     "continue": "Por favor resuelva el CAPTCHA y presione el botón \"Siguiente\".",
     "waiting": "Esperando ...",
     "solving": "Resolviendo CAPTCHA ...",

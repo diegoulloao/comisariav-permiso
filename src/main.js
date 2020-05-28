@@ -1,6 +1,6 @@
 /**
  * 
- *  Obtanin a document of permission to go buy food in Chile
+ *  Obtanins a document of permission to go buy food in Chile
  * 	@module main
  * 
  * 	Written by @diegoulloao
@@ -17,6 +17,7 @@ const StealthPlugin = require( 'puppeteer-extra-plugin-stealth' )
 const RecaptchaPlugin = require( 'puppeteer-extra-plugin-recaptcha' )
 
 const chalk = require( 'chalk' )
+const inquirer = require( 'inquirer' )
 
 
 /**
@@ -40,7 +41,7 @@ const field = require( './assets/selectors' )
  * 	Functions
  * 
  */
-const { getOption } = require( './assets/functions' )
+const { getOption, printData } = require( './assets/functions' )
 
 
 /**
@@ -70,6 +71,21 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 // Fills the fields
 ; ( async () => {
 
+	// Confirm prompt
+	console.log( chalk.bgYellow.black.bold( `${messages.confirm}\n` ) )
+	printData()
+
+	const response = await inquirer.prompt({
+		type: "confirm",
+		name: "proceed",
+		message: messages.yesno
+	})
+
+	if ( !response.proceed )
+		process.exit(0)
+	;
+
+
 	// Browser
 	puppeteer.use( StealthPlugin() )
 
@@ -90,6 +106,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Page
+	console.log()
 	console.log( chalk.bgYellow.black( messages.pageLoaded ) )
 
 	await page.setUserAgent( userAgent.toString() )
@@ -211,6 +228,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 		if ( target === page.target() ) {
 			await browser.close()
 			console.log( chalk.bgGreen.black( messages.ready ) )
+			process.exit(0)
 		}
 	})
 
