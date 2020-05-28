@@ -12,6 +12,7 @@
 const puppeteer = require( 'puppeteer-extra' )
 const userAgent = require( 'user-agents' )
 const StealthPlugin = require( 'puppeteer-extra-plugin-stealth' )
+const RecaptchaPlugin = require( 'puppeteer-extra-plugin-recaptcha' )
 
 const chalk = require( 'chalk' )
 
@@ -50,6 +51,14 @@ const messages = require( './assets/dictionary.json' )
 
 /**
  * 
+ * 	CAPTCHA Resolver Data
+ * 
+ */
+const captchaData = require( './captcha.json' )
+
+
+/**
+ * 
  *	Web URL where to get the permission
  * 
  */
@@ -58,8 +67,22 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 // Fills the fields
 ; ( async () => {
+
 	// Browser
 	puppeteer.use( StealthPlugin() )
+
+	if ( captchaData.api_key )	// optional
+		puppeteer.use( 
+			RecaptchaPlugin({
+				provider: {
+					id: captchaData.provider || '2captcha',
+					token: captchaData.api_key
+				},
+				visualFeedback: true
+			})
+		)
+	;
+
 	const browser = await puppeteer.launch({ headless: false, defaultViewport: null })
 	const page = ( await browser.pages() )[0]
 
@@ -161,6 +184,17 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 	// Wait for terminate the procedure ...
 	console.log( chalk.bgYellow.black( messages.continue ) )
 	console.log( `${messages.waiting}\n` )
+
+
+	// Solves CAPTCHA (optional)
+	if ( captchaData.api_key ) {
+		console.log( chalk.bgYellow.black( `${messages.solving}\n` ) )
+		const { error } = await page.solveRecaptchas()
+		
+		if ( !error )
+			console.log( chalk.bgYellow.black( `${messages.solving_done}\n` ) )
+		;
+	}
 
 
 	// Waits until user close the window

@@ -5,5 +5,7 @@
     "fallCounty": "* Deberá seleccionar manualmente el campo \"Seleccione Comuna\".",
     "continue": "Por favor resuelva el CAPTCHA y presione el botón \"Siguiente\".",
     "waiting": "Esperando ...",
+    "solving": "Resolviendo CAPTCHA ...",
+    "solving_done": "CAPTCHA resuelto.",
     "ready": "Listo."
 }
