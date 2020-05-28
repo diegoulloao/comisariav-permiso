@@ -209,25 +209,51 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 	// Solves CAPTCHA (optional)
 	if ( captchaData.api_key ) {
-		console.log( chalk.bgYellow.black( `${messages.solving}\n` ) )
-		const { error } = await page.solveRecaptchas()
-		
-		if ( !error )
-			console.log( chalk.bgYellow.black( `${messages.solving_done}\n` ) )
-		;
+
+		console.log( chalk.bgYellow.black( `${messages.solving}` ) )
+		const { solved } = await page.solveRecaptchas()
+
+		if ( !solved.length || !solved[0].isSolved ) {
+			console.log( chalk.bgRed.black( `${messages.solving_failed}\n` ) )
+			process.exit(0)
+		}
+
+		// Solved. Continue
+		console.log( chalk.bgGreen.black( `${messages.solving_done}\n` ) )
+
+		// Promise it when navigates to submit page
+		await Promise.all([
+			page.waitForNavigation(),
+			page.click( field.submit )
+		])
 		
 	} else {
+
 		// Wait for terminate the procedure ...
 		console.log( chalk.bgYellow.black( messages.continue ) )
 		console.log( `${messages.waiting}\n` )
+
+		// Waits for user submit click
+		await page.waitForNavigation()
+
 	}
 
 
-	// Waits until user close the window
+	// Auto-download PDF Permission
+	console.log( chalk.bgYellow.black( `${messages.downloading}` ) )
+
+	await page.waitForSelector( field.download )
+	await page.click( field.download )
+	await page.waitFor( 20000 )
+
+	console.log( chalk.bgGreen.black( `${messages.downloaded}\n` ) )
+
+
+	// All done. Waits until user close the window
 	await browser.on( 'targetdestroyed', async target => {
 		if ( target === page.target() ) {
 			await browser.close()
-			console.log( chalk.bgGreen.black( messages.ready ) )
+			console.log( chalk.bgGreen.black.bold( messages.ready ) )
 			process.exit(0)
 		}
 	})

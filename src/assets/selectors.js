@@ -34,6 +34,12 @@ module.exports = {
 	email: 'input[id="2404"]',
 
 	// Terms
-	terms: 'input[id="en_caso_de_comprobarse_falsedad_en_la_declaracion_de_la_causal_invocada_para_requerir_el_presente_documento_se_incurrira_en_las_penas_del_art_210_del_codigo_penal"]'
+	terms: 'input[id="en_caso_de_comprobarse_falsedad_en_la_declaracion_de_la_causal_invocada_para_requerir_el_presente_documento_se_incurrira_en_las_penas_del_art_210_del_codigo_penal"]',
+
+	// Submit
+	submit: 'button[type="submit"]',
+
+	// Download PDF
+	download: 'a[id="linkpdf"]'
 
 }

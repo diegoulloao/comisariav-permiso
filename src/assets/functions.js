@@ -27,6 +27,7 @@ const data = require( './../data.json' )
 async function getOption( selector, optionText, fieldName ) {
 
     return await this.evaluate( ( selector, optionText, fieldName )  => {
+
         let target = Array.from( document.querySelectorAll( `${selector} > div.chosen-drop > ul.chosen-results > li` ) )
             .filter( option => option.textContent === optionText )
         ;
@@ -39,6 +40,7 @@ async function getOption( selector, optionText, fieldName ) {
         target = target[0].getAttribute( 'data-option-array-index' )
 
         return `${selector} > div.chosen-drop > ul.chosen-results > li[data-option-array-index="${target}"]`
+        
     }, selector, optionText, fieldName )
 
 }
@@ -46,14 +48,13 @@ async function getOption( selector, optionText, fieldName ) {
 
 /**
  * 
- *  Shows All Data in screen
+ *  Shows All Data in screen.
+ *  @returns void
  * 
  */
 function printData() {
 
-    const dataTable = new Table({
-        // colWidths: [ 100, 200 ]
-    })
+    const dataTable = new Table()
 
     Object.keys(data).map( field => {
         if ( field !== "copia_email" )
