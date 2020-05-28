@@ -1,11 +1,18 @@
 {
     "pageLoaded": "Cargando la página ...",
-    "fillingData": "Cargado. Completando los datos ...",
+    "loaded": "Cargado.",
+    "fillingData": "Completando los datos ...",
     "fallRegion": "* Deberá seleccionar manualmente el campo \"Seleccione Región\".",
     "fallCounty": "* Deberá seleccionar manualmente el campo \"Seleccione Comuna\".",
+    "dataFilled": "Datos completados.",
     "continue": "Por favor resuelva el CAPTCHA y presione el botón \"Siguiente\".",
     "waiting": "Esperando ...",
     "solving": "Resolviendo CAPTCHA ...",
     "solving_done": "CAPTCHA resuelto.",
-    "ready": "Listo."
+    "ready": "Listo.",
+
+    "field": {
+        "region": "Región",
+        "county": "Comuna"
+    }
 }

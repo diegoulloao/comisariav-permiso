@@ -18,22 +18,22 @@
 * 	@returns { string } selector
 * 
 */
-async function getOption( selector, optionText ) {
+async function getOption( selector, optionText, fieldName ) {
 
-    return await this.evaluate( ( selector, optionText )  => {
+    return await this.evaluate( ( selector, optionText, fieldName )  => {
         let target = Array.from( document.querySelectorAll( `${selector} > div.chosen-drop > ul.chosen-results > li` ) )
             .filter( option => option.textContent === optionText )
         ;
 
         if ( target.length === 0 ) {
-            alert( `El valor "${optionText}" no existe, corrobórelo en su archivo de datos.` )
+            alert( `El valor "${optionText}" para "${fieldName}" no existe, corrobórelo en su archivo de datos.` )
             return false
         }
         
         target = target[0].getAttribute( 'data-option-array-index' )
 
         return `${selector} > div.chosen-drop > ul.chosen-results > li[data-option-array-index="${target}"]`
-    }, selector, optionText )
+    }, selector, optionText, fieldName )
 
 }
 

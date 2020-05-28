@@ -9,7 +9,9 @@
  */
 
 
+// Extends puppeteer
 const puppeteer = require( 'puppeteer-extra' )
+
 const userAgent = require( 'user-agents' )
 const StealthPlugin = require( 'puppeteer-extra-plugin-stealth' )
 const RecaptchaPlugin = require( 'puppeteer-extra-plugin-recaptcha' )
@@ -88,10 +90,13 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Page
-	console.log( chalk.bgGreen.black( messages.pageLoaded ) )
+	console.log( chalk.bgYellow.black( messages.pageLoaded ) )
+
 	await page.setUserAgent( userAgent.toString() )
 	await page.goto( pageIndex, { waitUntil: 'networkidle2' } )
-	console.log( chalk.bgGreen.black( `${messages.fillingData}\n` ) )
+
+	console.log( chalk.bgGreen.black( `${messages.loaded}\n` ) )
+	console.log( chalk.bgYellow.black( `${messages.fillingData}` ) )
 
 
 	// Types fullname
@@ -113,13 +118,13 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 	await page.waitForSelector( field.region )
 	await page.click( field.region )
 
-	const region_option = await getOption.call( page, field.region, data.region )
+	const region_option = await getOption.call( page, field.region, data.region, messages.field.region )
 
 	if ( region_option )
 		await page.click( region_option )
 	
 	else
-		console.log( chalk.bgRed.black( messages.fallRegion ) )
+		console.log( chalk.bgRed.black( messages.fallRegion) )
 	;
 
 
@@ -129,7 +134,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 		await page.click( field.county )
 		await page.waitForFunction( county_selector => document.querySelectorAll(`${county_selector} > div.chosen-drop > ul.chosen-results > li`).length > 1, {}, field.county )
 
-		const county_option = await getOption.call( page, field.county, data.comuna )
+		const county_option = await getOption.call( page, field.county, data.comuna, messages.field.county )
 		
 		if ( county_option )
 			await page.click( county_option )
@@ -177,13 +182,12 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 	await page.click( field.terms )
 
 
+	// Data filled message
+	console.log( chalk.bgGreen.black( `${messages.dataFilled}\n` ) )
+
+
 	// Scroll to down
 	await page.evaluate( () => window.scrollBy( 0, window.innerHeight ) )
-
-	
-	// Wait for terminate the procedure ...
-	console.log( chalk.bgYellow.black( messages.continue ) )
-	console.log( `${messages.waiting}\n` )
 
 
 	// Solves CAPTCHA (optional)
@@ -194,16 +198,20 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 		if ( !error )
 			console.log( chalk.bgYellow.black( `${messages.solving_done}\n` ) )
 		;
+		
+	} else {
+		// Wait for terminate the procedure ...
+		console.log( chalk.bgYellow.black( messages.continue ) )
+		console.log( `${messages.waiting}\n` )
 	}
 
 
 	// Waits until user close the window
-	await browser.on( 'targetdestroyed', async targetdestroyed => {
-		await browser.close()
-
-		if ( targetdestroyed.url() === pageIndex )
+	await browser.on( 'targetdestroyed', async target => {
+		if ( target === page.target() ) {
+			await browser.close()
 			console.log( chalk.bgGreen.black( messages.ready ) )
-		;
+		}
 	})
 
 })()
