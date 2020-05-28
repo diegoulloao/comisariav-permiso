@@ -1,0 +1,17 @@
+{
+  "name": "comisariav-permiso",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "puppeteer": "^3.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

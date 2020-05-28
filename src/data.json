@@ -1,0 +1,14 @@
+{
+    "nombre": "",
+    "rut": "",
+    "edad": "",
+
+    "region": "",
+    "comuna": "",
+    "direccion": "",
+
+    "destino": "",
+
+    "copia_email": true,
+    "email": ""
+}
