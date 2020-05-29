@@ -30,7 +30,7 @@ module.exports = {
 	destiny: 'input[id="1905"]',
 
 	// Email
-	email_copy: [ 'input[id="No"]', 'input[id="Si"]' ],
+	copy: [ 'input[id="No"]', 'input[id="Si"]' ],
 	email: 'input[id="2404"]',
 
 	// Terms

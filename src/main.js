@@ -1,10 +1,10 @@
 /**
  * 
- *  Obtanins a document of permission to go buy food in Chile
- * 	@module main
+ *	Obtanins a document of permission to go buy food in Chile during the covid-19.
+ *	@module main
  * 
- * 	Written by @diegoulloao
- * 	@version 1
+ *	Written by @diegoulloao
+ *	@version 1
  * 
  */
 
@@ -89,12 +89,12 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 	// Browser
 	puppeteer.use( StealthPlugin() )
 
-	if ( captchaData.api_key )	// optional
+	if ( captchaData['api-key'] )	// optional
 		puppeteer.use( 
 			RecaptchaPlugin({
 				provider: {
 					id: captchaData.provider || '2captcha',
-					token: captchaData.api_key
+					token: captchaData[ 'api-key' ]
 				},
 				visualFeedback: true
 			})
@@ -135,26 +135,26 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 	await page.waitForSelector( field.region )
 	await page.click( field.region )
 
-	const region_option = await getOption.call( page, field.region, data.region, messages.field.region )
+	const regionOption = await getOption.call( page, field.region, data.region, messages.field.region )
 
-	if ( region_option )
-		await page.click( region_option )
+	if ( regionOption )
+		await page.click( regionOption )
 	
 	else
-		console.log( chalk.bgRed.black( messages.fallRegion) )
+		console.log( chalk.bgRed.black( messages.fallRegion ) )
 	;
 
 
 	// Selects county
-	if ( region_option ) {
+	if ( regionOption ) {
 		await page.waitForSelector( field.county )
 		await page.click( field.county )
 		await page.waitForFunction( county_selector => document.querySelectorAll(`${county_selector} > div.chosen-drop > ul.chosen-results > li`).length > 1, {}, field.county )
 
-		const county_option = await getOption.call( page, field.county, data.comuna, messages.field.county )
+		const countyOption = await getOption.call( page, field.county, data.comuna, messages.field.county )
 		
-		if ( county_option )
-			await page.click( county_option )
+		if ( countyOption )
+			await page.click( countyOption )
 
 		else
 			console.log( chalk.bgRed.black( messages.fallCounty ) )
@@ -185,8 +185,8 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Selects email copy (optional)
-	await page.waitForSelector( data.copia_email ? field.email_copy[1] : field.email_copy[0] )
-	await page.click( data.copia_email ? field.email_copy[1] : field.email_copy[0] )
+	await page.waitForSelector( data.copia_email ? field.copy[1] : field.copy[0] )
+	await page.click( data.copia_email ? field.copy[1] : field.copy[0] )
 
 	if ( data.copia_email ) {
 		await page.waitForSelector( field.email )
@@ -208,24 +208,33 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Solves CAPTCHA (optional)
-	if ( captchaData.api_key ) {
+	if ( captchaData['api-key'] ) {
 
 		console.log( chalk.bgYellow.black( `${messages.solving}` ) )
 		const { solved } = await page.solveRecaptchas()
 
 		if ( !solved.length || !solved[0].isSolved ) {
-			console.log( chalk.bgRed.black( `${messages.solving_failed}\n` ) )
+			console.log( chalk.bgRed.black( `${messages.solvingFailed}\n` ) )
 			process.exit(0)
 		}
 
 		// Solved. Continue
-		console.log( chalk.bgGreen.black( `${messages.solving_done}\n` ) )
+		console.log( chalk.bgGreen.black( `${messages.solvingDone}\n` ) )
 
 		// Promise it when navigates to submit page
 		await Promise.all([
 			page.waitForNavigation(),
 			page.click( field.submit )
 		])
+
+		// Auto-download PDF Permission
+		console.log( chalk.bgYellow.black( `${messages.downloading}` ) )
+
+		await page.waitForSelector( field.download )
+		await page.click( field.download )
+		await page.waitFor( 2000 )
+
+		console.log( chalk.bgGreen.black( `${messages.downloaded}\n` ) )
 		
 	} else {
 
@@ -233,20 +242,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 		console.log( chalk.bgYellow.black( messages.continue ) )
 		console.log( `${messages.waiting}\n` )
 
-		// Waits for user submit click
-		await page.waitForNavigation()
-
 	}
-
-
-	// Auto-download PDF Permission
-	console.log( chalk.bgYellow.black( `${messages.downloading}` ) )
-
-	await page.waitForSelector( field.download )
-	await page.click( field.download )
-	await page.waitFor( 20000 )
-
-	console.log( chalk.bgGreen.black( `${messages.downloaded}\n` ) )
 
 
 	// All done. Waits until user close the window
