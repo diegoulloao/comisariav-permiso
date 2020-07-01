@@ -19,6 +19,12 @@ const RecaptchaPlugin = require( 'puppeteer-extra-plugin-recaptcha' )
 const chalk = require( 'chalk' )
 const inquirer = require( 'inquirer' )
 
+const fs = require( 'fs' )
+const util = require( 'util' )
+const stream = require( 'stream' )
+
+const fetch = require( 'node-fetch' )
+
 
 /**
  * 
@@ -54,10 +60,10 @@ const messages = require( './assets/dictionary.json' )
 
 /**
  * 
- * 	CAPTCHA Resolver Data
+ * 	App Config
  * 
  */
-const captchaData = require( './captcha.json' )
+const config = require( './config.json' )
 
 
 /**
@@ -65,7 +71,7 @@ const captchaData = require( './captcha.json' )
  *	Web URL where to get the permission
  * 
  */
-const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
+const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 
 
 // Fills the fields
@@ -89,19 +95,19 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 	// Browser
 	puppeteer.use( StealthPlugin() )
 
-	if ( captchaData['api-key'] )	// optional
+	if ( config.captcha['api-key'] )	// optional
 		puppeteer.use( 
 			RecaptchaPlugin({
+				visualFeedback: true,
 				provider: {
-					id: captchaData.provider || '2captcha',
-					token: captchaData[ 'api-key' ]
-				},
-				visualFeedback: true
+					id: config.captcha.provider || '2captcha',
+					token: config.captcha[ 'api-key' ]
+				}
 			})
 		)
 	;
 
-	const browser = await puppeteer.launch({ headless: false, defaultViewport: null })
+	const browser = await puppeteer.launch({ headless: config['headless-process'], defaultViewport: null })
 	const page = ( await browser.pages() )[0]
 
 
@@ -168,7 +174,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Checks all reasons
-	field.reason.map( async selector => {
+	field.reason.map( async selector => { return ;
 		await page.waitForSelector( selector )
 		await page.click( selector )
 	})
@@ -180,15 +186,15 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// Types destiny
-	await page.waitForSelector( field.destiny )
-	await page.type( field.destiny, data.destino )
+	// await page.waitForSelector( field.destiny )
+	// await page.type( field.destiny, data.destino )
 
 
 	// Selects email copy (optional)
-	await page.waitForSelector( data.copia_email ? field.copy[1] : field.copy[0] )
-	await page.click( data.copia_email ? field.copy[1] : field.copy[0] )
+	await page.waitForSelector( config['email-copy'] ? field.copy[1] : field.copy[0] )
+	await page.click( config['email-copy'] ? field.copy[1] : field.copy[0] )
 
-	if ( data.copia_email ) {
+	if ( config['email-copy'] ) {
 		await page.waitForSelector( field.email )
 		await page.type( field.email, data.email )
 	}
@@ -205,7 +211,6 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 	// Scroll to down
 	await page.evaluate( () => window.scrollBy( 0, window.innerHeight ) )
-
 
 	// Solves CAPTCHA (optional)
 	if ( captchaData['api-key'] ) {
@@ -231,8 +236,29 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 		console.log( chalk.bgYellow.black( `${messages.downloading}` ) )
 
 		await page.waitForSelector( field.download )
-		await page.click( field.download )
-		await page.waitFor( 2000 )
+		const fetchURL = await page.$eval( field.download, download => download.href )
+
+		// Manage permission download via async fetch
+		await ( async () => {
+
+			// Donwload the pdf permission
+			const response = await fetch( fetchURL )
+
+			// Prepare streamline
+			const streamPipeline = util.promisify( stream.pipeline )
+			const writeStream = fs.createWriteStream( `${ config['download-path'] }/permisov-${ Date.now() }.pdf` )
+
+			// Save file to disk
+			streamPipeline( response.body, writeStream )
+
+			if ( config['headless-process'] ) {
+				console.log( chalk.bgGreen.black.bold(message.ready) )
+
+				await browser.close()
+				process.exit(0)
+			}
+
+		})()
 
 		console.log( chalk.bgGreen.black( `${messages.downloaded}\n` ) )
 		
@@ -246,12 +272,15 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/103.html"
 
 
 	// All done. Waits until user close the window
-	await browser.on( 'targetdestroyed', async target => {
-		if ( target === page.target() ) {
-			await browser.close()
-			console.log( chalk.bgGreen.black.bold( messages.ready ) )
-			process.exit(0)
-		}
-	})
+	if ( !config['headless-process'] )
+		browser.on( 'targetdestroyed', async target => {
+			if ( target === page.target() ) {
+				console.log( chalk.bgGreen.black.bold( messages.ready ) )
+
+				await browser.close()
+				process.exit(0)
+			}
+		})
+	;
 
 })()

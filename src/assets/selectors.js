@@ -21,13 +21,13 @@ module.exports = {
 	address: 'input[id="1900"]',
 
 	// Journey
+	roundtrip: 'input[id="Ida - Regreso"]',
+	destiny: 'input[id="1905"]',
 	reason: [
 		'input[id="Compra de alimentos"]',
 		'input[id="Compra de medicamentos"]',
 		'input[id="Compra de insumos básicos"]'
 	],
-	roundtrip: 'input[id="Ida - Regreso"]',
-	destiny: 'input[id="1905"]',
 
 	// Email
 	copy: [ 'input[id="No"]', 'input[id="Si"]' ],

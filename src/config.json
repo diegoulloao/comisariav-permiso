@@ -1,0 +1,12 @@
+{
+    "captcha" : {
+        "provider": "2captcha",
+        "api-key": ""
+    },
+
+    "download-path": "/Users/diego/Downloads",
+
+    "email-copy" : true,
+
+    "headless-process" : false
+}
