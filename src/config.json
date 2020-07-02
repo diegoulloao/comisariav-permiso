@@ -5,8 +5,6 @@
     },
 
     "download-path": "/Users/diego/Downloads",
-
     "email-copy" : true,
-
-    "headless-process" : false
+    "headless-process" : true
 }

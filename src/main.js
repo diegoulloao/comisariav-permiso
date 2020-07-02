@@ -147,7 +147,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 		await page.click( regionOption )
 	
 	else
-		console.log( chalk.bgRed.black( messages.fallRegion ) )
+		console.log( chalk.bgRed.white( messages.fallRegion ) )
 	;
 
 
@@ -163,7 +163,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 			await page.click( countyOption )
 
 		else
-			console.log( chalk.bgRed.black( messages.fallCounty ) )
+			console.log( chalk.bgRed.white( messages.fallCounty ) )
 		;
 	}
 
@@ -213,13 +213,13 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 	await page.evaluate( () => window.scrollBy( 0, window.innerHeight ) )
 
 	// Solves CAPTCHA (optional)
-	if ( captchaData['api-key'] ) {
+	if ( config.captcha['api-key'] ) {
 
 		console.log( chalk.bgYellow.black( `${messages.solving}` ) )
 		const { solved } = await page.solveRecaptchas()
 
 		if ( !solved.length || !solved[0].isSolved ) {
-			console.log( chalk.bgRed.black( `${messages.solvingFailed}\n` ) )
+			console.log( chalk.bgRed.white( `${messages.solvingFailed}\n` ) )
 			process.exit(0)
 		}
 
@@ -232,6 +232,27 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 			page.click( field.submit )
 		])
 
+		// Checks for auth errors
+		if ( page.url().split('/').pop().split('.').shift() === 'error_vigente' ) {
+			let error_message = await page.$eval( '.alert.alert-success', error_container => error_container.innerText )
+			console.log( chalk.bgRed.white.bold( error_message ) )
+
+			if ( config['headless-process'] ) {
+				await browser.close()
+				process.exit(0)
+
+			} else {
+				browser.on( 'targetdestroyed', async target => {
+					if ( target === page.target() ) {
+						await browser.close()
+						process.exit(0)
+					}
+				})
+				
+				return ;
+			}
+		}
+
 		// Auto-download PDF Permission
 		console.log( chalk.bgYellow.black( `${messages.downloading}` ) )
 
@@ -241,7 +262,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 		// Manage permission download via async fetch
 		await ( async () => {
 
-			// Donwload the pdf permission
+			// Download the pdf permission
 			const response = await fetch( fetchURL )
 
 			// Prepare streamline
@@ -260,7 +281,9 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 
 		})()
 
-		console.log( chalk.bgGreen.black( `${messages.downloaded}\n` ) )
+		console.log( chalk.bgGreen.black(
+			`${ messages.downloaded + ( config["email-copy"] ? messages.downloaded_copy : '' ) }\n`
+		))
 		
 	} else {
 
