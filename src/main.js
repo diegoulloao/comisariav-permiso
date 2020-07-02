@@ -1,10 +1,10 @@
 /**
  * 
- *	Obtanins a document of permission to go buy food in Chile during the covid-19.
- *	@module main
+ *	Comisariav-permiso
+ *	v1.0
+ *	@diegoulloao
  * 
- *	Written by @diegoulloao
- *	@version 1
+ *	2020 · Apache Licence 2.0
  * 
  */
 
@@ -12,17 +12,21 @@
 // Extends puppeteer
 const puppeteer = require( 'puppeteer-extra' )
 
+// Captcha
 const userAgent = require( 'user-agents' )
 const StealthPlugin = require( 'puppeteer-extra-plugin-stealth' )
 const RecaptchaPlugin = require( 'puppeteer-extra-plugin-recaptcha' )
 
+// Console input
 const chalk = require( 'chalk' )
 const inquirer = require( 'inquirer' )
 
+// File Stream
 const fs = require( 'fs' )
 const util = require( 'util' )
 const stream = require( 'stream' )
 
+// Http
 const fetch = require( 'node-fetch' )
 
 
@@ -68,6 +72,14 @@ const config = require( './config.json' )
 
 /**
  * 
+ * 	Captcha API-KEY & Provider
+ * 
+ */
+const { captcha } = require( './config.json' )
+
+
+/**
+ * 
  *	Web URL where to get the permission
  * 
  */
@@ -95,13 +107,13 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 	// Browser
 	puppeteer.use( StealthPlugin() )
 
-	if ( config.captcha['api-key'] )	// optional
+	if ( captcha['api-key'] )	// optional
 		puppeteer.use( 
 			RecaptchaPlugin({
 				visualFeedback: true,
 				provider: {
-					id: config.captcha.provider || '2captcha',
-					token: config.captcha[ 'api-key' ]
+					id: captcha.provider || '2captcha',
+					token: captcha[ 'api-key' ]
 				}
 			})
 		)
@@ -145,7 +157,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 
 	if ( regionOption )
 		await page.click( regionOption )
-	
+
 	else
 		console.log( chalk.bgRed.white( messages.fallRegion ) )
 	;
@@ -213,7 +225,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 	await page.evaluate( () => window.scrollBy( 0, window.innerHeight ) )
 
 	// Solves CAPTCHA (optional)
-	if ( config.captcha['api-key'] ) {
+	if ( captcha['api-key'] ) {
 
 		console.log( chalk.bgYellow.black( `${messages.solving}` ) )
 		const { solved } = await page.solveRecaptchas()

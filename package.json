@@ -1,11 +1,15 @@
 {
-  "name": "comisariav-permiso",
+  "name": "@diegoulloao/comisariav-permiso",
   "version": "1.0.0",
-  "description": "",
+  "description": "Obtiene salvoconductos de manera automatizada.",
   "main": "src/main.js",
+  "bin": {
+    "permisov": "bin/comisariav-permiso"
+  },
   "dependencies": {
     "chalk": "^4.0.0",
     "cli-table": "^0.3.1",
+    "esm": "^3.2.25",
     "inquirer": "^7.1.0",
     "node-fetch": "^2.6.0",
     "puppeteer": "^3.1.0",
@@ -18,7 +22,15 @@
   "scripts": {
     "start": "node src/main.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "comisariav",
+    "permiso",
+    "salvoconducto"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diegoulloao/comisariav-permiso"
+  },
+  "author": "diegoulloao",
+  "license": "Apache-2.0"
 }
