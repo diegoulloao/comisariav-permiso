@@ -1,13 +1,13 @@
 {
-    "nombre": "Diego Andrés Ulloa Ormeño",
-    "rut": "17359014-8",
-    "edad": "30",
+    "nombre": "",
+    "rut": "",
+    "edad": "",
 
-    "region": "Metropolitana de Santiago",
-    "comuna": "Santiago Centro",
-    "direccion": "Av. Vicuña Mackenna 881",
+    "region": "",
+    "comuna": "",
+    "direccion": "",
 
     "destino": "Supermercado",
-
-    "email": "diego.ulloa@outlook.com"
+    
+    "email": ""
 }

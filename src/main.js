@@ -242,7 +242,11 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 		await Promise.all([
 			page.waitForNavigation(),
 			page.click( field.submit )
-		])
+
+		]).catch( error => {
+			console.log( chalk.bgRed.white(error) )
+			throw error
+		 })
 
 		// Checks for auth errors
 		if ( page.url().split('/').pop().split('.').shift() === 'error_vigente' ) {
