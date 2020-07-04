@@ -80,13 +80,13 @@ const { captcha } = require( './config.json' )
 
 /**
  * 
- *	Web abstracted URL where to get the permission
+ *	Abstracted web URL where to get the permission
  * 
  */
 let pageIndex = "https://comisariavirtual.cl/tramites/iniciar/10@.html"
 
 
-// Fills the fields
+// Get the permission
 ; ( async () => {
 
 	// Confirm prompt
@@ -125,7 +125,7 @@ let pageIndex = "https://comisariavirtual.cl/tramites/iniciar/10@.html"
 	// Browser
 	puppeteer.use( StealthPlugin() )
 
-	if ( captcha['api-key'] )	// optional
+	if ( captcha['api-key'] )
 		puppeteer.use( 
 			RecaptchaPlugin({
 				visualFeedback: true,
@@ -135,6 +135,9 @@ let pageIndex = "https://comisariavirtual.cl/tramites/iniciar/10@.html"
 				}
 			})
 		)
+	else
+		// No Captcha api-key forces headless:false
+		config[ 'headless-process' ] = false
 	;
 
 	const browser = await puppeteer.launch({ headless: config['headless-process'], defaultViewport: null })
@@ -246,7 +249,7 @@ let pageIndex = "https://comisariavirtual.cl/tramites/iniciar/10@.html"
 	// Scroll to down
 	await page.evaluate( () => window.scrollBy( 0, window.innerHeight ) )
 
-	// Solves CAPTCHA (optional)
+	// Solves CAPTCHA
 	if ( captcha['api-key'] ) {
 
 		console.log( chalk.bgYellow.black( `${messages.solving}` ) )

@@ -16,13 +16,19 @@ git clone https://github.com/diegoulloao/comisariav-permiso
 
 ### Instalar dependencias y generar enlace simbólico al sistema
 
-**npm:**
+```
+# npm
 
-`npm i` && `npm link`
+npm i
+npm link
+```
 
-**yarn:**
+```
+# yarn
 
-`yarn` && `yarn link`
+yarn
+yarn link
+```
 
 ## Configuración
 **1. Datos personales**
