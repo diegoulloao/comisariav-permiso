@@ -1,6 +1,6 @@
 {
     "confirm": "\nSe pedirá un salvoconducto:",
-    "yesno": "¿Confirmar?",
+    "permission_type": "Confirme el tipo de permiso",
     "pageLoaded": "Cargando recursos ...",
     "loaded": "Listo.",
     "fillingData": "Completando datos ...",

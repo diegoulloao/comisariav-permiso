@@ -1,9 +1,9 @@
 /** 
  * 
- *	Functions.
+ *	Utils.
  *	@module assets/functions
  *
- *	@description Contains all functions used in main file.
+ *	@description Contains all util functions used in main file.
  * 
 */
 
@@ -11,7 +11,7 @@
 const Table = require( 'cli-table' )
 const chalk = require( 'chalk' )
 
-const data = require( './../data.json' )
+const data = require( '../data.json' )
 
 
 /**

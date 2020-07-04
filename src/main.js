@@ -51,7 +51,7 @@ const field = require( './assets/selectors' )
  * 	Functions
  * 
  */
-const { getOption, printData } = require( './assets/functions' )
+const utils = require( './assets/utils' )
 
 
 /**
@@ -80,10 +80,10 @@ const { captcha } = require( './config.json' )
 
 /**
  * 
- *	Web URL where to get the permission
+ *	Web abstracted URL where to get the permission
  * 
  */
-const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
+let pageIndex = "https://comisariavirtual.cl/tramites/iniciar/10@.html"
 
 
 // Fills the fields
@@ -91,18 +91,36 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 
 	// Confirm prompt
 	console.log( chalk.bgYellow.black.bold( `${messages.confirm}\n` ) )
-	printData()
+	utils.printData()
 
-	const response = await inquirer.prompt({
-		type: "confirm",
-		name: "proceed",
-		message: messages.yesno
+	const { permission_type } = await inquirer.prompt({
+		type: "list",
+		name: "permission_type",
+		message: messages.permission_type,
+		choices: [
+			'Compra de alimentos e insumos básicos',
+			'Sacar a pasear mascota'
+		],
+
+		filter: ( answer ) => {
+			
+			switch ( answer ) {
+				case 'Compra de alimentos e insumos básicos':
+					answer = 3
+					break
+				;
+
+				case 'Sacar a pasear mascota':
+					answer = 1
+				;
+			}
+
+			return answer
+		}
 	})
 
-	if ( !response.proceed )
-		process.exit(0)
-	;
-
+	// Set the URL
+	pageIndex = pageIndex.replace( '@', permission_type )
 
 	// Browser
 	puppeteer.use( StealthPlugin() )
@@ -153,7 +171,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 	await page.waitForSelector( field.region )
 	await page.click( field.region )
 
-	const regionOption = await getOption.call( page, field.region, data.region, messages.field.region )
+	const regionOption = await utils.getOption.call( page, field.region, data.region, messages.field.region )
 
 	if ( regionOption )
 		await page.click( regionOption )
@@ -169,7 +187,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 		await page.click( field.county )
 		await page.waitForFunction( county_selector => document.querySelectorAll(`${county_selector} > div.chosen-drop > ul.chosen-results > li`).length > 1, {}, field.county )
 
-		const countyOption = await getOption.call( page, field.county, data.comuna, messages.field.county )
+		const countyOption = await utils.getOption.call( page, field.county, data.comuna, messages.field.county )
 		
 		if ( countyOption )
 			await page.click( countyOption )
@@ -186,10 +204,12 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 
 
 	// Checks all reasons
-	field.reason.map( async selector => { return ;
-		await page.waitForSelector( selector )
-		await page.click( selector )
-	})
+	if ( permission_type === 3 )
+		field.reason.map( async selector => {
+			await page.waitForSelector( selector )
+			await page.click( selector )
+		})
+	;
 
 
 	// Checks roundtrip
@@ -198,8 +218,10 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 
 
 	// Types destiny
-	// await page.waitForSelector( field.destiny )
-	// await page.type( field.destiny, data.destino )
+	if ( permission_type === 3 ) {
+		await page.waitForSelector( field.destiny )
+		await page.type( field.destiny, data.destino )
+	}
 
 
 	// Selects email copy (optional)
@@ -246,7 +268,7 @@ const pageIndex = "https://comisariavirtual.cl/tramites/iniciar/101.html"
 		]).catch( error => {
 			console.log( chalk.bgRed.white(error) )
 			throw error
-		 })
+		})
 
 		// Checks for auth errors
 		if ( page.url().split('/').pop().split('.').shift() === 'error_vigente' ) {
