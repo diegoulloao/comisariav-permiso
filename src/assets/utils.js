@@ -29,8 +29,8 @@ async function getOption( selector, optionText, fieldName ) {
 
     return await this.evaluate(
         
-        ( selector, optionText, fieldName )  => {
-            
+        ({ selector, optionText, fieldName })  => {
+
             let target = Array.from( document.querySelectorAll( `${selector} > div.chosen-drop > ul.chosen-results > li` ) )
                 .filter( option => option.textContent === optionText )
             ;
@@ -45,10 +45,12 @@ async function getOption( selector, optionText, fieldName ) {
             return `${selector} > div.chosen-drop > ul.chosen-results > li[data-option-array-index="${target}"]`
         },
         
-        selector,
-        optionText,
-        fieldName
-    )
+        {
+            selector,
+            optionText,
+            fieldName
+        }
+    );
 
 }
 
